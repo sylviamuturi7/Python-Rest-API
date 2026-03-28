@@ -41,7 +41,6 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
-# Translations
 *.mo
 *.pot
 
@@ -69,10 +68,10 @@ target/
 # pyenv
 .python-version
 
-# celery beat schedule file
+
 celerybeat-schedule
 
-# SageMath parsed files
+
 *.sage.py
 
 # Environments
@@ -83,8 +82,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
-# Spyder project settings
 .spyderproject
 .spyproject
 
