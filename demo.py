@@ -33,7 +33,7 @@ def get_all_items():
 
 def get_item(item_id):
     print("\n3. Getting specific item by ID...")
-    # Validate item_id to prevent SSRF
+    # Validate item_id 
     if not isinstance(item_id, str) or not item_id.replace('-', '').replace('_', '').isalnum():
         print("Invalid item_id format")
         return
@@ -42,7 +42,7 @@ def get_item(item_id):
 
 def update_item(item_id, update_data):
     print("\n4. Updating item quantity and price...")
-    # Validate item_id to prevent SSRF
+    # Validate item_id 
     if not isinstance(item_id, str) or not item_id.replace('-', '').replace('_', '').isalnum():
         print("Invalid item_id format")
         return
@@ -51,7 +51,7 @@ def update_item(item_id, update_data):
 
 def delete_item(item_id):
     print("\n5. Deleting item...")
-    # Validate item_id to prevent SSRF
+    # Validate item_id 
     if not isinstance(item_id, str) or not item_id.replace('-', '').replace('_', '').isalnum():
         print("Invalid item_id format")
         return
@@ -60,7 +60,7 @@ def delete_item(item_id):
 
 def verify_deletion(item_id):
     print("6. Verifying item was deleted...")
-    # Validate item_id to prevent SSRF
+    # Validate item_id 
     if not isinstance(item_id, str) or not item_id.replace('-', '').replace('_', '').isalnum():
         print("Invalid item_id format")
         return
@@ -71,25 +71,24 @@ def demo_basic_operations():
     print_section("DEMO: Basic CRUD Operations")
     print("\n1. Adding a new inventory item...")
     item_data = {
-        'name': 'Organic Whole Milk',
-        'barcode': '012345678901',
+        'name': 'Organic Oat Milk',
         'quantity': 25,
-        'price': 4.99
+        'price': 40.99
     }
     response = add_demo_item(item_data)
     if response.status_code == 201:
         item_id = response.json()['id']
         get_all_items()
         get_item(item_id)
-        update_item(item_id, {'quantity': 30, 'price': 5.49})
+        update_item(item_id, {'quantity': 30, 'price': 50.49})
         delete_item(item_id)
         verify_deletion(item_id)
 
 def add_search_test_items():
     test_items = [
-        {'name': 'Apple iPhone 15', 'barcode': '190198761234', 'quantity': 10, 'price': 70000.99},
-        {'name': 'Samsung Galaxy S24', 'barcode': '190198761235', 'quantity': 8, 'price': 7899.99},
-        {'name': 'Apple MacBook Pro', 'barcode': '190198761236', 'quantity': 5, 'price': 215999.99}
+        {'name': 'Apple iPhone 17', 'quantity': 10, 'price': 70000.99},
+        {'name': 'Samsung Galaxy S26', 'quantity': 8, 'price': 7899.99},
+        {'name': 'Apple MacBook Pro', 'quantity': 5, 'price': 215999.99}
     ]
     print("\nAdding test items for search demo...")
     for item in test_items:
@@ -101,19 +100,12 @@ def demo_search_functionality():
     print("\n1. Searching by name 'Apple'...")
     response = requests.get(f"{BASE_URL}/inventory/search/name/Apple")
     print_response(response, "Search by Name")
-    print("\n2. Searching by barcode...")
-    response = requests.get(f"{BASE_URL}/inventory/search/barcode/190198761234")
-    print_response(response, "Search by Barcode")
-    print("\n3. Searching with non-existent barcode...")
-    response = requests.get(f"{BASE_URL}/inventory/search/barcode/999999999")
-    print_response(response, "Search Non-Existent Barcode")
 
 def demo_openfoodfacts_integration():
     print_section("DEMO: OpenFoodFacts Integration")
-    print("\n1. Adding item with real barcode (Coca-Cola)...")
+    print("\n1. Adding item with real Coca-Cola...")
     item_data = {
-        'name': 'Coca-Cola Classic',
-        'barcode': '049000050103',
+        'name': 'Coca-Cola No Sugar',
         'quantity': 50,
         'price': 1.99
     }
@@ -123,9 +115,6 @@ def demo_openfoodfacts_integration():
         print("\n2. Getting item details...")
         response = requests.get(f"{BASE_URL}/inventory/{item_id}")
         print_response(response, "Item with Product Details")
-        print("\n3. Searching by barcode...")
-        response = requests.get(f"{BASE_URL}/inventory/search/barcode/049000050103")
-        print_response(response, "Barcode Search Results")
 
 FAKE_ID = "non-existent-id"
 
@@ -133,9 +122,8 @@ def demo_error_handling():
     print_section("DEMO: Error Handling")
     print("\n1. Trying to add item without name...")
     response = requests.post(f"{BASE_URL}/inventory", json={
-        'barcode': '123456789',
         'quantity': 10,
-        'price': 5.99
+        'price': 50.99
     })
     print_response(response, "Missing Name Error")
     print("\n2. Trying to get non-existent item...")

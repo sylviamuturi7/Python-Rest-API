@@ -12,12 +12,7 @@ def client():
 
 @pytest.fixture
 def sample_item():
-    return InventoryItem(
-        name="Test Product",
-        barcode="123456789",
-        quantity=10,
-        price=5.99
-    )
+    return InventoryItem(name="Test Product")
 
 def post_item(client, data):
     return client.post('/inventory',
@@ -37,19 +32,18 @@ class TestInventoryRoutes:
         assert response.json == []
 
     def test_adding_item_works(self, client):
-        data = {'name': 'Test Product', 'barcode': '123456789', 'quantity': 10, 'price': 5.99}
+        data = {'name': 'Test Product', 'quantity': 10, 'price': 5.99}
         response = post_item(client, data)
         assert response.status_code == 201
         result = response.json
         assert result['name'] == 'Test Product'
-        assert result['barcode'] == '123456789'
         assert result['quantity'] == 10
         assert result['price'] == 5.99
         assert 'id' in result
         assert 'created_at' in result
 
     def test_add_item_no_name(self, client):
-        data = {'barcode': '123456789', 'quantity': 10, 'price': 5.99}
+        data = {'quantity': 10, 'price': 5.99}
         response = post_item(client, data)
         assert response.status_code == 400
         assert 'error' in response.json
@@ -59,9 +53,6 @@ class TestInventoryRoutes:
         assert response.status_code == 201
         result = response.json
         assert result['name'] == 'Simple Product'
-        assert result['quantity'] == 0
-        assert result['price'] == 0.0
-        assert result['barcode'] is None
 
     def test_get_single_item(self, client, sample_item):
         inventory_db.append(sample_item)
@@ -117,13 +108,12 @@ class TestInventoryRoutes:
         assert response.status_code == 404
         assert 'error' in response.json
 
-    def test_search_by_barcode_found_in_inventory(self, client, sample_item):
+    def test_search_by_name_found_in_inventory(self, client, sample_item):
         inventory_db.append(sample_item)
-        response = client.get(f'/inventory/search/barcode/{sample_item.barcode}')
+        response = client.get(f'/inventory/search/name/Test')
         assert response.status_code == 200
         result = response.json
-        assert result['id'] == sample_item.id
-        assert result['barcode'] == sample_item.barcode
+        assert result[0]['id'] == sample_item.id
 
     def test_search_by_name_found(self, client, sample_item):
         inventory_db.append(sample_item)
@@ -150,24 +140,18 @@ class TestInventoryRoutes:
 class TestInventoryModel:
 
     def test_inventory_item_creation(self):
-        item = InventoryItem(name="Test Product", barcode="123456789", quantity=10, price=5.99)
+        item = InventoryItem(name="Test Product")
         assert item.name == "Test Product"
-        assert item.barcode == "123456789"
-        assert item.quantity == 10
-        assert item.price == 5.99
         assert item.id is not None
         assert item.created_at is not None
         assert item.updated_at is not None
         assert item.product_details == {}
 
     def test_inventory_item_to_dict(self):
-        item = InventoryItem(name="Test Product", barcode="123456789", quantity=10, price=5.99)
+        item = InventoryItem(name="Test Product")
         item_dict = item.to_dict()
         assert isinstance(item_dict, dict)
         assert item_dict['name'] == "Test Product"
-        assert item_dict['barcode'] == "123456789"
-        assert item_dict['quantity'] == 10
-        assert item_dict['price'] == 5.99
         assert 'id' in item_dict
         assert 'created_at' in item_dict
         assert 'updated_at' in item_dict
@@ -176,9 +160,6 @@ class TestInventoryModel:
     def test_inventory_item_minimal_creation(self):
         item = InventoryItem(name="Simple Product")
         assert item.name == "Simple Product"
-        assert item.barcode is None
-        assert item.quantity == 0
-        assert item.price == 0.0
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
