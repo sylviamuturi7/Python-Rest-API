@@ -2,6 +2,7 @@ import pytest
 import json
 from app import app, inventory_db, InventoryItem
 
+#creating a fake one. 
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
